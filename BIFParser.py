@@ -9,7 +9,7 @@ import sys
 import re
 
 __author__ = "Antoine Bosselut"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __maintainer__ = "Antoine Bosselut"
 __email__ = "antoine.bosselut@uw.edu"
 __status__ = "Prototype"

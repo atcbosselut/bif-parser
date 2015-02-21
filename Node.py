@@ -11,8 +11,10 @@ received by the constructor is the same as the number of variables given to the 
 
 '''
 
+import numpy
+
 __author__ = "Antoine Bosselut"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __maintainer__ = "Antoine Bosselut"
 __email__ = "antoine.bosselut@uw.edu"
 __status__ = "Prototype"
@@ -62,6 +64,14 @@ class Node:
     #Return the number of parents of this node
     def numParents(self):
         return len(self.parents)
+
+    #Return the parents of the node
+    def getParents(self):
+        return self.parents
+
+    #Return the children of the node
+    def getChildren(self):
+        return self.children
     
     #Set the Probability Distribution of this node
     def setDist(self, distribution):
@@ -74,7 +84,12 @@ class Node:
     #Update the marginal based on new information
     def updateMarginal(self, information):
         #TODO: come up with a function for updating the marginal based on the information
-        print ""
+        #Sum over conditional variables
+        normalizer = len(information.keys())
+        sums = np.zeros(self.numStates)
+        for value in information.itervalues():
+            sums+=np.asarray(value)
+        self.marginal = sums/normalizer
 
     #Return marginal distribution of node variable in node 
     def getMarginal(self):
