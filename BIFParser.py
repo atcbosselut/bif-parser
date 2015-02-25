@@ -4,6 +4,7 @@
 This is a script that parses a BIF (Bayesian Implementation Format) file passed by the command line.
 
 '''
+
 import Node
 import sys
 import re
@@ -143,7 +144,7 @@ def printNodes(nodes):
 
 BIF = fixWhiteSpace(BIF)
 nodes = parseBIF(BIF)
-printNodes(nodes)
+#printNodes(nodes)
 
 
 
