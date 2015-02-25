@@ -9,12 +9,11 @@ If you change the node constructor parameters, however, remember to change the B
 received by the constructor is the same as the number of variables given to the constructor. 
 
 '''
-
+from __future__ import division
 import copy
-import numpy as np
 
 __author__ = "Antoine Bosselut"
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 __maintainer__ = "Antoine Bosselut"
 __email__ = "antoine.bosselut@uw.edu"
 __status__ = "Prototype"
@@ -53,35 +52,25 @@ class Factor:
 
 	def sendBelief(self, node):
 		i=self.getIndex(node.getName())
-		j=len(self.fields)-1 #0
+		j=len(self.fields)-1
 		sumOver = copy.deepcopy(self.potential)
-		while j >= 0: #len(self.fields):
-			#print ("i: %s" %i)
-			#print ("numFields: %s" %len(self.fields))
+		while j >= 0: 
 			if i != j:
 				tempNode = self.getFields()[j]
 				key = tempNode.getName()
-				#self.printFactor()
 				info = copy.deepcopy(self.information[key])
 				tupleKeys = sumOver.keys()
 				tempDict = {}
 				for tups in tupleKeys:
 					tempDict[tups[:j] + tups[j+1:]] = 0
 				for tups in tupleKeys:
-					#print("Length Tups: %s" %len(tups))
-					#print("j: %s" %j)
-					#if j != len(tups):
-					#print tups
-					tempDict[tups[:j] + tups[(j+1):]] = tempDict[tups[:j] + tups[(j+1):]] + sumOver[tups]*info[tups[j]]
-					#else:
-					#	tempDict[tups[:j]] = tempDict[tups[:j]] + sumOver[tups]*info[tups[j]]
+					tempDict[tups[:j] + tups[(j+1):]] = tempDict[tups[:j] + tups[(j+1):]] + sumOver[tups]*info[(tups[j],)]
 				sumOver = copy.deepcopy(tempDict)
-			j-=1 #+=1
+			j-=1
 		return sumOver
 
 	def printFactor(self):
 		print("Fields: ")
 		for a in self.fields:
 			print a.getName()
-						
-		#TODO get product of information and multiply by potential. Then sum over nodes that don't matter and send
+					

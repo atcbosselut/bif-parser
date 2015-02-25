@@ -4,7 +4,7 @@
 This is a script that parses a BIF (Bayesian Implementation Format) file passed by the command line.
 
 '''
-
+from __future__ import division
 import Node
 import sys
 import re
@@ -119,7 +119,7 @@ def parseBIF(BIF):
                     #In the CPD dictionary key, the states of the node are stored first. The second tuple is that of the parent values
                     theCPD[(temp.getStates(), tuple(lineList[:temp.numParents()]))] = tuple([float(h) for h in lineList[temp.numParents():]])                    
                 i+=1
-            print theCPD
+            #print theCPD
             temp.setDist(theCPD)
         else:
             i=i+1

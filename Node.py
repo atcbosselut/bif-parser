@@ -10,11 +10,10 @@ If you change the node constructor parameters, however, remember to change the B
 received by the constructor is the same as the number of variables given to the constructor. 
 
 '''
-
-import numpy
+from __future__ import division
 
 __author__ = "Antoine Bosselut"
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 __maintainer__ = "Antoine Bosselut"
 __email__ = "antoine.bosselut@uw.edu"
 __status__ = "Prototype"
@@ -82,12 +81,13 @@ class Node:
     #Set the Probability Distribution of this node
     def setDist(self, distribution):
         self.dist = distribution
+        #If this is a root value, set the distribution to be the marginal
         if self.isRoot():
             self.marginal = {}
             for key, value in distribution.iteritems():
                 i=0
                 while i<len(value):
-                    self.marginal[key[i]] = value[i]
+                    self.marginal[(key[i],)] = value[i]
                     i+=1
     
     #Return the probability distribution of thise node
@@ -116,27 +116,16 @@ class Node:
             pass
         else:
             thesum=0
-            vals = {}
             vals = {(state,): 1 for state in self.states}
-            #for state in self.states:
-             #   vals[state] = 1
             #For each factor we receive information from
             for a in self.information:
                 #For this evidence in the message
-                print("Keys: ")
-                print a.keys()
                 for ev in a.keys():
-                    #print ("Information: ")
-                    #print a
-                    #print("States: ")
-                    #print vals
-                    #print ev
-                    #print vals[ev]
                     vals[ev] = vals[ev]*a[ev]
-            print("vals: ")
-            print vals
+
             for val in vals.itervalues():
                 thesum+=val
+
             for key in vals.keys():
                 if thesum != 0:
                     vals[key] = vals[key]/thesum
@@ -148,12 +137,12 @@ class Node:
         return self.marginal
 
     def sendMarginal(self, targetFactor):
-        #TODO: Remove contribution of target factor from marginal and then send factor to
         index = -1
         cacheQuery = targetFactor.getFields()[0].getName()
         if self.isRoot():
             return self.marginal
-        if (cacheQuery == self.name) and (not self.isRoot()):
+
+        if (cacheQuery == self.name):
             index=0
         else:
             j=0
@@ -162,27 +151,21 @@ class Node:
                     index = j + (not self.isRoot())
                 j+=1
         thesum=0
-        vals = {state: 1 for state in self.states}
+        vals = {(state,): 1 for state in self.states}
         i=0
         while i<len(self.information):
             if (i != index):
                 for ev in self.information[i].keys():
-                    #print ("Information2: ")
-                    #print a
-                    #print("States2: ")
-                    #print vals
-                    #print ev
-                    #print vals[ev]
-                    vals[ev] = vals[ev]*a[ev]
+                    vals[ev] = vals[ev]*self.information[i][ev]
             i+=1
         for val in vals.itervalues():
             thesum+=val
-            print("Sum: %s" %thesum)
+
         for key in vals.keys():
             vals[key] = vals[key]/thesum
         return vals
-        #TODO: Send information without index "index"
 
+    #Print the characteristics of this node
     def printNode(self):
         print self.getName()
         print "Parents: "

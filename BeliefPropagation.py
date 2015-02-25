@@ -4,15 +4,16 @@
 BeliefPropagation.py
 
 '''
-
+from __future__ import division
 import Node
 import Factor
 import BIFParser
 import sys
+import copy
 import numpy as np
 
 __author__ = "Antoine Bosselut"
-__version__ = "1.0.2"
+__version__ = "1.0.4"
 __maintainer__ = "Antoine Bosselut"
 __email__ = "antoine.bosselut@uw.edu"
 __status__ = "Prototype"
@@ -29,19 +30,17 @@ def main():
 			tempArray = [nodes]
 			tempArray.extend(nodes.getParents())
 			factors.append(Factor.Factor(nodes.getDist(), tempArray))
-	#print len(factors)
-	#for f in factors:
-		#print f.getPotential()
 
-	i=0
-	while i<1:
+	converged=False
+	converNum=0
+	while not converged:
+		prevConverNum = copy.deepcopy(converNum)
+		converNum=0
 		for a in BN:
 			for f in factors:
 				if partOf(a,f):
 					message = a.sendMarginal(f)
 					f.receiveBelief(message, a)
-		#for f in factor:
-		#	f.updateBelief()
 		for f in factors:
 			for a in BN:
 				if partOf(a,f):
@@ -49,10 +48,22 @@ def main():
 					a.receiveMarginal(message, f)
 		for a in BN:
 			a.updateMarginal()
-		i+=1
+			converNum += a.getMarginal()[a.getMarginal().keys()[0]]
+		if (np.abs(converNum-prevConverNum) < .00001):
+			converged=True		
+	g=open("results.txt","w")
 
 	for a in BN:
+		g.write(a.getName() + " ")
 		print a.getMarginal()
+		i=len(a.getMarginal().keys())-1
+		while(i >= 0):
+			g.write(str(a.getMarginal()[a.getMarginal().keys()[i]]) + " ")
+			i-=1
+		g.write("\n")
+
+	g.close()
+
 
 def partOf(node,factor):
 	for b in factor.getFields():
